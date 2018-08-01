@@ -16,11 +16,12 @@
 
 #include <vector>
 #include <expression/expr.hpp>
+#include "eqsystem.hpp"
 
 using namespace snowgoose::expression;
 using namespace snowgoose::interval;
 
-struct DexterKinematicEquations {
+struct DexterKinematicEquations : public EqualitySystem {
     // xp = x[0], yp = x[1], q1 = x[2], q2 = x[3], q3 = x[4], q4 = x[5]
 
     static constexpr double la = 1;
@@ -30,14 +31,14 @@ struct DexterKinematicEquations {
     static constexpr double d2 = 0.5;
 
     DexterKinematicEquations() {
-        mG.push_back(g1<double>());
-        mG.push_back(g2<double>());
-        mG.push_back(g3<double>());
-        mG.push_back(g4<double>());
-        mIG.push_back(g1<Interval<double>>());
-        mIG.push_back(g2<Interval<double>>());
-        mIG.push_back(g3<Interval<double>>());
-        mIG.push_back(g4<Interval<double>>());
+        EqualitySystem::mG.push_back(g1<double>());
+        EqualitySystem::mG.push_back(g2<double>());
+        EqualitySystem::mG.push_back(g3<double>());
+        EqualitySystem::mG.push_back(g4<double>());
+        EqualitySystem::mIG.push_back(g1<Interval<double>>());
+        EqualitySystem::mIG.push_back(g2<Interval<double>>());
+        EqualitySystem::mIG.push_back(g3<Interval<double>>());
+        EqualitySystem::mIG.push_back(g4<Interval<double>>());
     }
     
     template <class T> Expr<T> g1() {
@@ -64,8 +65,7 @@ struct DexterKinematicEquations {
         return y;
     }
 
-    std::vector<Expr<double>> mG;
-    std::vector<Expr<Interval<double>>> mIG;
+
 };
 
 #endif /* DEXTER_HPP */
