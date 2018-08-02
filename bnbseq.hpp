@@ -51,5 +51,6 @@ void iterate(const EqualitySystem& es, std::vector<Box>& boxlist, std::vector<Bo
 
 
 
+
 #endif /* BNBSEQ_HPP */
 

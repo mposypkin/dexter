@@ -5,17 +5,17 @@
  */
 
 /* 
- * File:   dexter.cpp
+ * File:   spheres.cpp
  * Author: mposypkin
  *
- * Created on July 31, 2018, 3:40 PM
+ * Created on August 2, 2018, 4:15 PM
  */
 
 #include <math.h>
 #include <cstdlib>
 #include <iostream>
 
-#include "dexter.hpp"
+#include "spheres.hpp"
 #include "bnbseq.hpp"
 #include "bnbmultiset.hpp"
 
@@ -23,15 +23,12 @@
  * 
  */
 int main(int argc, char** argv) {
-    DexterKinematicEquations de;
+    Spheres ce;
 
     std::vector<Interval<double>> var = {
-        {-15, 15},
-        {-15, 15},
-        {-M_PI, M_PI},
-        {-M_PI, M_PI},
-        {-M_PI, M_PI},
-        {-M_PI, M_PI}
+        {-10, 10},
+        {-10, 10},
+        {-10, 10}
     };
 
 //    std::cout << calcInterval(de.mIG[0], var) << "\n";
@@ -41,7 +38,7 @@ int main(int argc, char** argv) {
     boxlist.push_back(var);
     std::vector<Box> boundary, internal;
 
-    constexpr double mind = 0.2;
+    constexpr double mind = 1;
     long long int maxSteps = 1000000;
 #if 0    
     iterate(de, boxlist, boundary, internal, mind, maxSteps);
@@ -55,7 +52,7 @@ int main(int argc, char** argv) {
     std::vector<int> coorcomp = {0,1};
     BoxCompare bc(coorcomp);
     BoxSet bsbound(bc);
-    iterateSet(de, boxlist, bsbound, mind, maxSteps);
+    iterateSet(ce, boxlist, bsbound, mind, maxSteps);
     for(auto b : bsbound) {
         std::cout << b << "\n";        
     }
