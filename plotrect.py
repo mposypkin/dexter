@@ -8,6 +8,8 @@ plt.axes()
 pat = re.compile('\[(?:\d|-|\.)*\:(?:\d|-|\.)*\]')
 for line in sys.stdin:
     # print(line)
+    if re.match("^#.*", line):
+        continue
     arr =pat.findall(line)
     # print(arr)
     # ends = re.split('\[|\:|\]', I)
@@ -27,7 +29,7 @@ for line in sys.stdin:
     b2 = float(ends[1])
 
 
-    rectangle = plt.Rectangle((a1, a2), b1 - a1, b2 - a2, fc='y', fill = False, color='red')
+    rectangle = plt.Rectangle((a1, a2), b1 - a1, b2 - a2, fc='y', fill = True, color='red')
     plt.gca().add_patch(rectangle)
 
 

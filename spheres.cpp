@@ -18,6 +18,7 @@
 #include "spheres.hpp"
 #include "bnbseq.hpp"
 #include "bnbmultiset.hpp"
+#include "bnbmerge.hpp"
 
 /*
  * 
@@ -38,16 +39,17 @@ int main(int argc, char** argv) {
     boxlist.push_back(var);
     std::vector<Box> boundary, internal;
 
-    constexpr double mind = 1;
+    constexpr double mind = .01;
     long long int maxSteps = 1000000;
-#if 0    
-    iterate(de, boxlist, boundary, internal, mind, maxSteps);
+#if 1   
+    std::vector<int> coorcomp = {0,1};
+    iterateMerge(ce, coorcomp, boxlist, boundary, internal, mind, maxSteps);
 
     for(auto b : boundary) {
         std::cout << b << "\n";        
     }
     
-    std::cout << "Total " << boundary.size() << " boxes\n";
+    std::cout << "# Total " << boundary.size() << " boxes\n";
 #else    
     std::vector<int> coorcomp = {0,1};
     BoxCompare bc(coorcomp);
@@ -56,7 +58,7 @@ int main(int argc, char** argv) {
     for(auto b : bsbound) {
         std::cout << b << "\n";        
     }
-    std::cout << "Total " << bsbound.size() << " boxes\n";
+    std::cout << "# Total " << bsbound.size() << " boxes\n";
 #endif    
     return 0;
 }

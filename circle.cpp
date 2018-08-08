@@ -56,7 +56,7 @@ int main(int argc, char** argv) {
     for(auto b : bsbound) {
         std::cout << b << "\n";        
     }
-    std::cout << "Total " << bsbound.size() << " boxes\n";
+    std::cout << "# Total " << bsbound.size() << " boxes\n";
 #endif    
     return 0;
 }
