@@ -115,7 +115,83 @@ BoxSort sortBox(const EqualitySystem& es, const Box& box) {
     return BoxSort::boundary;
 }
 
+/**
+ * Computes the center of the box
+ * @param box the box to find a center
+ * @return the central point
+ */
+std::vector<double> getCenter(const Box& box) {
+    std::vector<double> c;
+    for (auto i : box) {
+        const double ci = 0.5 * (i.lb() + i.rb());
+        c.push_back(ci);
+    }
+    return c;
+}
 
+/**
+ * Checks whether the box contains the 
+ * @param es
+ * @param box
+ * @return true if zero was found, false otherwise
+ */
+bool containsRoot(const EqualitySystem& es, const Box& box) {
+    auto convol = [ = ](const std::vector<double>& x){
+        double v = 0;
+        for (auto g : es.mG) {
+            const double u = g.calc(FuncAlg<double>(x));
+            v += u * u;
+        }
+        return v;
+    };
+    auto step = [&box, convol](std::vector<double>& x, double& v, int i, double h) {
+        auto xn = x;
+        xn[i] = x[i] + h;
+        xn[i] = std::min(xn[i], box[i].rb());
+        xn[i] = std::max(xn[i], box[i].lb());
+        double vn = convol(xn);
+        bool rv = false;
+        if (vn < v) {
+            v = vn;
+            x[i] = xn[i];
+            rv = true;
+        }
+        return rv;
+    };
+
+    auto dec = [](double&h) {
+        h *= 0.5;
+    };
+
+    std::vector<double> x = getCenter(box);
+    bool rv = true;
+    const double me = maxEdge(box);
+    const double hmin = 1e-6 * me;
+    double h = 0.25 * me;
+    double v = convol(x);
+    const int n = box.size();
+
+    while (h > hmin) {
+        for (int i = 0; i < n; i++) {
+            bool rv = step(x, v, i, h) || step(x, v, i, -h);
+            if (!rv) {
+                dec(h);
+            }
+        }
+    }
+#if 1    
+    constexpr double vzero = 1e-3;
+#else    
+    constexpr double vzero = 1e6;
+#endif        
+    if (v <= vzero)
+        rv = true;
+    else
+        rv = false;
+//    std::cout << "# v = " << v;
+//    std::cout << ", rv = " << rv << "\n";
+    return rv;
+}
 
 #endif /* BNBCORE_HPP */
 

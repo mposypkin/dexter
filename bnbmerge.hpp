@@ -121,7 +121,7 @@ void iterateMerge(const EqualitySystem& es, const std::vector<int>& pcoords, std
         BoxSort sort = sortBox(es, b);
         switch (sort) {
             case BoxSort::boundary:
-                if (maxEdge(b) <= mind) {
+                if ((maxEdge(b) <= mind) && containsRoot(es, b)) {                    
                     for (bi = boundary.begin(); bi != boundary.end();) {
                         if (*bi <= bm) {
                             bi = boundary.erase(bi);

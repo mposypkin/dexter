@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
     boxlist.push_back(var);
     std::vector<Box> boundary, internal;
 
-    constexpr double mind = .01;
+    constexpr double mind = .1;
     long long int maxSteps = 1000000;
 #if 1   
     std::vector<int> coorcomp = {0,1};
