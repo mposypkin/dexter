@@ -33,7 +33,7 @@ for line in sys.stdin:
     plt.gca().add_patch(rectangle)
 
 
-    circle = plt.Circle((0, 0), radius=3, fc='y', fill = False)
-    plt.gca().add_patch(circle)
+#circle = plt.Circle((0, 0), radius=3, fc='y', fill = False)
+#plt.gca().add_patch(circle)
 plt.axis('scaled')
 plt.show()

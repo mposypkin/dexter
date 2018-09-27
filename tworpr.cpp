@@ -16,7 +16,7 @@
 #include <iostream>
 #include <c++/6/limits>
 
-#include "dexter.hpp"
+#include "tworpr.hpp"
 #include "bnbseq.hpp"
 #include "bnbmultiset.hpp"
 #include "bnbmerge.hpp"
@@ -25,15 +25,13 @@
  * 
  */
 int main(int argc, char** argv) {
-    DexterKinematicEquations de;
+    TwoRPRKinematicEquations de;
 
     std::vector<Interval<double>> var = {
-        {-13, 13},
-        {-16, 16},
-        {-M_PI, M_PI},
-        {-M_PI, M_PI},
-        {-M_PI, M_PI},
-        {-M_PI, M_PI}
+        {-5, 8},
+        {-8, 8},
+        {1, 8},
+        {1, 8},
     };
 
     //    std::cout << calcInterval(de.mIG[0], var) << "\n";
@@ -44,12 +42,12 @@ int main(int argc, char** argv) {
     std::vector<Box> boundary;
 
     constexpr double mind = 5e-2;
+    constexpr double maxc = std::numeric_limits<double>::max();
     long long int maxSteps = 1e8;
 #if 1    
     std::vector<int> coorcomp = {0, 1};
-//    const bool doLocSearch = true;
-    const bool doLocSearch = false;
-    iterateMerge(de, coorcomp, boxlist, boundary, mind,  maxSteps, doLocSearch);
+    const bool doLocSearch = true;
+    iterateMerge(de, coorcomp, boxlist, boundary, mind, maxSteps, doLocSearch);
 
     for (auto b : boundary) {
         std::cout << b << "\n";
@@ -57,7 +55,7 @@ int main(int argc, char** argv) {
 
     std::cout << "# Total " << boundary.size() << " boxes\n";
     std::cout << "# Total " << maxSteps << " performed\n";
-    
+
 #else    
     std::vector<int> coorcomp = {0, 1};
     BoxCompare bc(coorcomp);

@@ -32,31 +32,34 @@ int main(int argc, char** argv) {
         {-10, 10}
     };
 
-//    std::cout << calcInterval(de.mIG[0], var) << "\n";
-//    std::cout << sortBox(de, var);
+    //    std::cout << calcInterval(de.mIG[0], var) << "\n";
+    //    std::cout << sortBox(de, var);
 
     std::vector<Box> boxlist;
     boxlist.push_back(var);
-    std::vector<Box> boundary, internal;
+    std::vector<Box> boundary;
 
-    constexpr double mind = .1;
+    //    constexpr double mind = std::numeric_limits<double>::max();
+    constexpr double mind = 0.5;
+    constexpr double maxc = 4;
     long long int maxSteps = 1000000;
 #if 1   
-    std::vector<int> coorcomp = {0,1};
-    iterateMerge(ce, coorcomp, boxlist, boundary, internal, mind, maxSteps);
+    std::vector<int> coorcomp = {0, 1};
+    const bool doLocSearch = true;
+    iterateMerge(ce, coorcomp, boxlist, boundary, mind, maxSteps, doLocSearch);
 
-    for(auto b : boundary) {
-        std::cout << b << "\n";        
+    for (auto b : boundary) {
+        std::cout << b << "\n";
     }
-    
+
     std::cout << "# Total " << boundary.size() << " boxes\n";
 #else    
-    std::vector<int> coorcomp = {0,1};
+    std::vector<int> coorcomp = {0, 1};
     BoxCompare bc(coorcomp);
     BoxSet bsbound(bc);
     iterateSet(ce, boxlist, bsbound, mind, maxSteps);
-    for(auto b : bsbound) {
-        std::cout << b << "\n";        
+    for (auto b : bsbound) {
+        std::cout << b << "\n";
     }
     std::cout << "# Total " << bsbound.size() << " boxes\n";
 #endif    

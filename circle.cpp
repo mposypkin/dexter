@@ -38,7 +38,7 @@ int main(int argc, char** argv) {
     boxlist.push_back(var);
     std::vector<Box> boundary, internal;
 
-    constexpr double mind = 0.1;
+    constexpr double mind = 0.5;
     long long int maxSteps = 1000000;
 #if 0    
     iterate(de, boxlist, boundary, internal, mind, maxSteps);

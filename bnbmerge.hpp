@@ -95,21 +95,27 @@ Box merge(const Box& b1, const Box& b2) {
 }
 
 /**
- * Performs iterations
+ * Performs iterations of the B&B solver for constructing and approximation of 
+ * the equality system's solution set and projecting it to the set of coordinates
  * @param es equality system
  * @param pcoords coordinates for the projection
  * @param boxlist the box list
+ * @param the paving constructed
  * @param mind minimum diameter of a box
- * @param maxSteps the maximal number of steps to perform
+ * @param maxSteps the maximal number of steps to perform, actual number on exit
+ * @param doLocSearch true if we check for root, false otherwise
+ * @param maxc maximal deviation of a constraint from zero for boundary box
  */
-void iterateMerge(const EqualitySystem& es, const std::vector<int>& pcoords, std::vector<Box>& boxlist, std::vector<Box>& boundary, std::vector<Box>& internal, double mind, long long int &maxSteps) {
-    while (!boxlist.empty()) {
+void iterateMerge(const EqualitySystem& es, const std::vector<int>& pcoords, std::vector<Box>& boxlist, std::vector<Box>& paving, double mind, long long int &maxSteps, bool doLocSearch = true, double maxc = std::numeric_limits<double>::max()) {
+    long long int counter = 0;
+    while (!boxlist.empty() && (counter < maxSteps)) {
+        counter ++;
         Box b = boxlist.back();
         boxlist.pop_back();
         Box bm = projectBox(pcoords, b);
         bool sameBox = false;
         std::vector<Box>::const_iterator bi;
-        for (bi = boundary.begin(); bi != boundary.end(); bi++) {
+        for (bi = paving.begin(); bi != paving.end(); bi++) {
             if (bm <= *bi) {
                 sameBox = true;
                 break;
@@ -121,21 +127,21 @@ void iterateMerge(const EqualitySystem& es, const std::vector<int>& pcoords, std
         BoxSort sort = sortBox(es, b);
         switch (sort) {
             case BoxSort::boundary:
-                if ((maxEdge(b) <= mind) && containsRoot(es, b)) {                    
-                    for (bi = boundary.begin(); bi != boundary.end();) {
+                if ((maxEdge(b) <= mind) && (getAbs(es, b) <= maxc) && ((!doLocSearch) || containsRoot(es, b))) {                    
+                    for (bi = paving.begin(); bi != paving.end();) {
                         if (*bi <= bm) {
-                            bi = boundary.erase(bi);
+                            bi = paving.erase(bi);
                         } else if (mergeDim(*bi, bm) != -1) {
                             //std::cout << "merge " << *bi << " and " << bm << "\n";
                             bm = merge(*bi, bm);
-                            boundary.erase(bi);
-                            bi = boundary.begin();
+                            paving.erase(bi);
+                            bi = paving.begin();
                             continue;
                         } else {
                             bi++;
                         }
                     }
-                    boundary.push_back(bm);
+                    paving.push_back(bm);
                 } else {
                     splitBox(b, boxlist);
                 }
@@ -143,9 +149,12 @@ void iterateMerge(const EqualitySystem& es, const std::vector<int>& pcoords, std
             case BoxSort::external:
                 break;
             case BoxSort::internal:
-                internal.push_back(bm);
+                std::cerr << "Unsupported";
+                exit(-1);
+                break;
         }
     }
+    maxSteps = counter;
 }
 
 

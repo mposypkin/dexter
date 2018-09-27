@@ -1,4 +1,4 @@
-BINS = circle.exe dexter.exe spheres.exe
+BINS = circle.exe dexter.exe tworpr.exe spheres.exe
 
 
 include all.inc
