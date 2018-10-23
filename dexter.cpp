@@ -14,7 +14,7 @@
 #include <math.h>
 #include <cstdlib>
 #include <iostream>
-#include <c++/6/limits>
+#include <limits>
 
 #include "dexter.hpp"
 #include "bnbseq.hpp"
