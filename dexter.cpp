@@ -47,8 +47,8 @@ int main(int argc, char** argv) {
     long long int maxSteps = 1e8;
 #if 1    
     std::vector<int> coorcomp = {0, 1};
-//    const bool doLocSearch = true;
-    const bool doLocSearch = false;
+    const bool doLocSearch = true;
+    //const bool doLocSearch = false;
     iterateMerge(de, coorcomp, boxlist, boundary, mind,  maxSteps, doLocSearch);
 
     for (auto b : boundary) {

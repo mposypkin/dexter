@@ -147,12 +147,33 @@ std::vector<double> getCenter(const Box& box) {
 }
 
 /**
- * Checks whether the box contains the 
- * @param es
- * @param box
+ * Checks whether the box contains the roots by coordinate descent
+ * @param es equation system
+ * @param box box constraints
+ * @return 
+ */
+bool containsRootNewt(const EqualitySystem& es, const Box& box) {
+    std::vector<double> x = getCenter(box);
+    const int n = box.size();
+    for (auto dg : es.mDG) {
+        std::cout << "OK in\n";
+        ValDer<double> der = dg.calc(ValDerAlg<double>(x));
+        Grad<double> grad = der.grad();
+        for (int i = 0; i < n; i++) {
+            std::cout << "a [" << i << "] = " << grad.getGrad()[i] << "\n";
+        }
+
+    }
+    return true;
+}
+
+/**
+ * Checks whether the box contains the roots by coordinate descent
+ * @param es equation system
+ * @param box box to search
  * @return true if zero was found, false otherwise
  */
-bool containsRoot(const EqualitySystem& es, const Box& box) {
+bool containsRootCdesc(const EqualitySystem& es, const Box& box) {
     constexpr double vzero = 1e-3;
     const double me = maxEdge(box);
     const double hmin = 1e-3 * me;
@@ -204,6 +225,18 @@ bool containsRoot(const EqualitySystem& es, const Box& box) {
     //    std::cout << "# v = " << v;
     //    std::cout << ", rv = " << rv << "\n";
     return rv;
+}
+
+/**
+ * Checks whether a box contains a root of a system
+ * @param es equations system
+ * @param box box to search
+ * @return 
+ */
+bool containsRoot(const EqualitySystem& es, const Box& box) {
+    std::cout.flush();
+    return containsRootNewt(es, box);
+    //return containsRootCdesc(es, box);
 }
 
 #endif /* BNBCORE_HPP */

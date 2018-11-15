@@ -39,6 +39,10 @@ struct DexterKinematicEquations : public EqualitySystem {
         EqualitySystem::mIG.push_back(g2<Interval<double>>());
         EqualitySystem::mIG.push_back(g3<Interval<double>>());
         EqualitySystem::mIG.push_back(g4<Interval<double>>());
+        EqualitySystem::mDG.push_back(g1<ValDer<double>>());
+        EqualitySystem::mDG.push_back(g2<ValDer<double>>());
+        EqualitySystem::mDG.push_back(g3<ValDer<double>>());
+        EqualitySystem::mDG.push_back(g4<ValDer<double>>());
     }
     
     template <class T> Expr<T> g1() {

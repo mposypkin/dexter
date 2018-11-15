@@ -20,9 +20,22 @@
 using namespace snowgoose::expression;
 using namespace snowgoose::interval;
 
+/**
+ * The system of equations
+ */
 struct EqualitySystem {
+    /**
+     * System of equations expressions
+     */
     std::vector<Expr<double>> mG;
+    /**
+     * Equations interval expressions
+     */
     std::vector<Expr<Interval<double>>> mIG;
+    /**
+     * Equations derivatives
+     */
+    std::vector<Expr<ValDer<double>>> mDG;
 };
 
 #endif /* EQSYSTEM_HPP */
