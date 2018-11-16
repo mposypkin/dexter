@@ -16,6 +16,7 @@
 
 #include <algorithm>
 #include <expression/expr.hpp>
+#include <src/optimization.h>
 
 #include "eqsystem.hpp"
 
@@ -146,6 +147,8 @@ std::vector<double> getCenter(const Box& box) {
     return c;
 }
 
+static const EqualitySystem* pes;
+
 /**
  * Checks whether the box contains the roots by coordinate descent
  * @param es equation system
@@ -153,18 +156,114 @@ std::vector<double> getCenter(const Box& box) {
  * @return 
  */
 bool containsRootNewt(const EqualitySystem& es, const Box& box) {
-    std::vector<double> x = getCenter(box);
+    std::vector<double> c = getCenter(box);
+    pes = &es;
     const int n = box.size();
-    for (auto dg : es.mDG) {
-        std::cout << "OK in\n";
-        ValDer<double> der = dg.calc(ValDerAlg<double>(x));
-        Grad<double> grad = der.grad();
-        for (int i = 0; i < n; i++) {
-            std::cout << "a [" << i << "] = " << grad.getGrad()[i] << "\n";
+    const int m = es.mG.size();
+    //    for (auto dg : es.mDG) {
+    //        std::cout << "OK in\n";
+    //        ValDer<double> der = dg.calc(ValDerAlg<double>(x));
+    //        Grad<double> grad = der.grad();
+    //        for (int i = 0; i < n; i++) {
+    //            std::cout << "a [" << i << "] = " << grad.getGrad()[i] << "\n";
+    //        }
+    //
+    //    }
+
+    auto function1_fvec = [](const alglib::real_1d_array &x, alglib::real_1d_array &fi, void *ptr) {
+        //
+        // this callback calculates
+        // f0(x0,x1) = 100*(x0+3)^4,
+        // f1(x0,x1) = (x1-3)^4
+        //
+        //        fi[0] = x[0] * x[0] + x[1] * x[1] + (x[2] - 2) * (x[2] - 2) - 9;
+        //        fi[1] = x[0] * x[0] + x[1] * x[1] + (x[2] + 2) * (x[2] + 2) - 9;
+        //fi[0] = fi[0] * fi[0]; 
+        //fi[0] = fi[1] * fi[1]; 
+        std::vector<double> xx(x.getcontent(), x.getcontent() + x.length());
+        int i = 0;
+        for (auto g : pes->mG) {
+            const double v = g.calc(FuncAlg<double>(xx));
+            fi[i++] = v;
+        }
+    };
+
+    auto function1_jac = [](const alglib::real_1d_array &x, alglib::real_1d_array &fi, alglib::real_2d_array &jac, void *ptr) {
+        //
+        // this callback calculates
+        // f0(x0,x1) = 100*(x0+3)^4,
+        // f1(x0,x1) = (x1-3)^4
+        // and Jacobian matrix J = [dfi/dxj]
+        //
+        std::vector<double> xx(x.getcontent(), x.getcontent() + x.length());
+        int i = 0;
+        const int n = x.length();
+        //        std::cout << "n = " << xx.size() << "\n";
+        //        std::cout.flush();
+        for (auto dg : pes->mDG) {
+            ValDer<double> der = dg.calc(ValDerAlg<double>(xx));
+            const double v = der.value();
+            fi[i] = v;
+            Grad<double> grad = der.grad();
+            for (int j = 0; j < n; j++) {
+                jac[i][j] = grad.getGrad()[j];
+            }
+            i++;
         }
 
+        //        jac[0][0] = 2 * x[0];
+        //        jac[0][1] = 2 * x[1];
+        //        jac[0][2] = 2 * x[2];
+        //        jac[1][0] = 2 * x[0];
+        //        jac[1][1] = 2 * x[1];
+        //        jac[1][2] = 2 * x[2];
+    };
+
+    alglib::real_1d_array x;
+    x.setlength(n);
+    alglib::real_1d_array bndl;
+    bndl.setlength(n);
+    alglib::real_1d_array bndu;
+    bndu.setlength(n);
+    for (int i = 0; i < n; i++) {
+        x[i] = c[i];
+        bndl[i] = box[i].lb();
+        bndu[i] = box[i].rb();
     }
-    return true;
+    double epsx = 0.0000000001;
+
+    alglib::minlmstate state;
+    alglib::ae_int_t maxits = 0;
+    alglib::minlmreport rep;
+    //alglib::minlmcreatev(m, x, 0.0001, state);
+    alglib::minlmcreatevj(m, x, state);
+    minlmsetcond(state, epsx, maxits);
+    minlmsetbc(state, bndl, bndu);
+
+    //alglib::minlmoptimize(state, function1_fvec);
+    alglib::minlmoptimize(state, function1_fvec, function1_jac);
+    alglib::minlmresults(state, x, rep);
+    //    std::cout << x.tostring(8) << "\n";
+    std::vector<double> xx(x.getcontent(), x.getcontent() + x.length());
+    double s = 0;
+    for (auto g : pes->mG) {
+        //std::cout << g.calc(FuncAlg<double>(xx)) << "\n";
+        double ts = g.calc(FuncAlg<double>(xx));
+        s += ts * ts;
+    }
+    bool good = true;
+//    std::cout << "s = " << s << "\n";
+    if (s > 1e-4) {
+        good = false;
+    } else {
+        //        for (int i = 0; i < n; i++) {
+        //            if ((xx[i] < box[i].lb()) || (xx[i] > box[i].rb())) {
+        //                good = false;
+        //                break;
+        //            }
+        //        }
+    }
+    return good;
 }
 
 /**
@@ -234,9 +333,8 @@ bool containsRootCdesc(const EqualitySystem& es, const Box& box) {
  * @return 
  */
 bool containsRoot(const EqualitySystem& es, const Box& box) {
-    std::cout.flush();
     return containsRootNewt(es, box);
-    //return containsRootCdesc(es, box);
+//        return containsRootCdesc(es, box);
 }
 
 #endif /* BNBCORE_HPP */

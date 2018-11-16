@@ -40,12 +40,13 @@ int main(int argc, char** argv) {
     std::vector<Box> boundary;
 
     //    constexpr double mind = std::numeric_limits<double>::max();
-    constexpr double mind = 0.5;
+    constexpr double mind = 0.2;
     constexpr double maxc = 4;
     long long int maxSteps = 1000000;
 #if 1   
     std::vector<int> coorcomp = {0, 1};
-    const bool doLocSearch = true;
+//    const bool doLocSearch = true;
+    const bool doLocSearch = false;
     iterateMerge(ce, coorcomp, boxlist, boundary, mind, maxSteps, doLocSearch);
 
     for (auto b : boundary) {

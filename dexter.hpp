@@ -24,9 +24,9 @@ using namespace snowgoose::interval;
 struct DexterKinematicEquations : public EqualitySystem {
     // xp = x[0], yp = x[1], q1 = x[2], q2 = x[3], q3 = x[4], q4 = x[5]
 
-    static constexpr double la = 7.2;
+    static constexpr double la = 5;
 
-    static constexpr double lb = 8.7;
+    static constexpr double lb = 2;
 
     static constexpr double d2 = 3;
 

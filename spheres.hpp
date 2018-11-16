@@ -22,17 +22,17 @@ using namespace snowgoose::expression;
 using namespace snowgoose::interval;
 
 struct Spheres : public EqualitySystem {
-    
     static constexpr double r1 = 5;
     static constexpr double r2 = 5;
     static constexpr double d = 8;
-    
 
     Spheres() {
         EqualitySystem::mG.push_back(g1<double>());
         EqualitySystem::mG.push_back(g2<double>());
         EqualitySystem::mIG.push_back(g1<Interval<double>>());
         EqualitySystem::mIG.push_back(g2<Interval<double>>());
+        EqualitySystem::mDG.push_back(g1<ValDer<double>>());
+        EqualitySystem::mDG.push_back(g2<ValDer<double>>());
     }
 
     template <class T> Expr<T> g1() {

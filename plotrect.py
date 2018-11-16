@@ -35,5 +35,10 @@ for line in sys.stdin:
 
 #circle = plt.Circle((0, 0), radius=3, fc='y', fill = False)
 #plt.gca().add_patch(circle)
+circle = plt.Circle((-3, 0), radius=3, fc='y', fill = False)
+plt.gca().add_patch(circle)
+circle = plt.Circle((-3, 0), radius=7, fc='y', fill = False)
+plt.gca().add_patch(circle)
+
 plt.axis('scaled')
 plt.show()

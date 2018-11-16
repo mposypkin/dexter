@@ -27,7 +27,11 @@ STD_OPT = -std=c++14 -U__STRICT_ANSI__
 #snowgoose
 SNOWGOOSE=../snowgoose
 
-INC = -I$(SNOWGOOSE)
+#alglib
+ALGLIB=../alglib
+ALGLIBA=../alglib/src/alglib.a
+
+INC = -I$(SNOWGOOSE) -I$(ALGLIB)
 
 #common options
 COMOPTS = $(STD_OPT) $(INC)
@@ -36,7 +40,7 @@ COMOPTS = $(STD_OPT) $(INC)
 CPPOPTS= $(COMOPTS) $(PCPPOPTS) $(OPTIMOPT)
 
 #Linker options for static linking
-LDFLAGS = -lm $(OPENMPLD) $(PTHREADLD) $(STATIC)
+LDFLAGS = -lm $(ALGLIBA) $(OPENMPLD) $(PTHREADLD) $(STATIC)
 
 
 MFLAGS = MPICC=$(MPICC) COPTS="$(COPTS)" CPPOPTS="$(CPPOPTS) LIBTOOL="$(LIBTOOL)"
