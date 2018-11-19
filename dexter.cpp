@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
     boxlist.push_back(var);
     std::vector<Box> boundary;
 
-    constexpr double mind = 0.2;
+    constexpr double mind = 0.5;
 //    constexpr double mind = 5e-1;
     long long int maxSteps = 1e8;
 #if 1    

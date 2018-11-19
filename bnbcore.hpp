@@ -147,15 +147,18 @@ std::vector<double> getCenter(const Box& box) {
     return c;
 }
 
+
+constexpr double vzero = 1e-4;
+
 static const EqualitySystem* pes;
 
 /**
- * Checks whether the box contains the roots by coordinate descent
+ * Checks whether the box contains the roots by Levenberg Marquardt method
  * @param es equation system
  * @param box box constraints
  * @return 
  */
-bool containsRootNewt(const EqualitySystem& es, const Box& box) {
+bool containsRootLM(const EqualitySystem& es, const Box& box) {
     std::vector<double> c = getCenter(box);
     pes = &es;
     const int n = box.size();
@@ -230,7 +233,7 @@ bool containsRootNewt(const EqualitySystem& es, const Box& box) {
         bndl[i] = box[i].lb();
         bndu[i] = box[i].rb();
     }
-    double epsx = 0.0000000001;
+    constexpr double epsx = 1e-3;
 
     alglib::minlmstate state;
     alglib::ae_int_t maxits = 0;
@@ -252,8 +255,8 @@ bool containsRootNewt(const EqualitySystem& es, const Box& box) {
         s += ts * ts;
     }
     bool good = true;
-//    std::cout << "s = " << s << "\n";
-    if (s > 1e-4) {
+    //    std::cout << "s = " << s << "\n";
+    if (s > vzero) {
         good = false;
     } else {
         //        for (int i = 0; i < n; i++) {
@@ -273,7 +276,6 @@ bool containsRootNewt(const EqualitySystem& es, const Box& box) {
  * @return true if zero was found, false otherwise
  */
 bool containsRootCdesc(const EqualitySystem& es, const Box& box) {
-    constexpr double vzero = 1e-3;
     const double me = maxEdge(box);
     const double hmin = 1e-3 * me;
     auto convol = [ = ](const std::vector<double>& x){
@@ -333,8 +335,8 @@ bool containsRootCdesc(const EqualitySystem& es, const Box& box) {
  * @return 
  */
 bool containsRoot(const EqualitySystem& es, const Box& box) {
-    return containsRootNewt(es, box);
-//        return containsRootCdesc(es, box);
+//    return containsRootNewt(es, box);
+            return containsRootCdesc(es, box);
 }
 
 #endif /* BNBCORE_HPP */
